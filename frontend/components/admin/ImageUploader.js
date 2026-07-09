@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { uploadImages } from "@/lib/adminApi";
+import { normalizeMediaUrl } from "@/lib/api";
 
 export default function ImageUploader({ images = [], onChange }) {
   const [uploading, setUploading] = useState(false);
@@ -13,7 +14,7 @@ export default function ImageUploader({ images = [], onChange }) {
     setError("");
     setUploading(true);
     try {
-      const urls = await uploadImages(files);
+      const urls = (await uploadImages(files)).map(normalizeMediaUrl);
       onChange([...images, ...urls]);
     } catch (err) {
       setError(err.message || "Upload failed");
@@ -33,10 +34,12 @@ export default function ImageUploader({ images = [], onChange }) {
 
       {images.length > 0 && (
         <div className="mb-3 flex flex-wrap gap-3">
-          {images.map((url) => (
+          {images.map((url) => {
+            const src = normalizeMediaUrl(url);
+            return (
             <div key={url} className="relative h-24 w-24 overflow-hidden border border-border">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={url} alt="" className="h-full w-full object-cover" />
+              <img src={src} alt="" className="h-full w-full object-cover" />
               <button
                 type="button"
                 onClick={() => removeImage(url)}
@@ -46,7 +49,8 @@ export default function ImageUploader({ images = [], onChange }) {
                 ×
               </button>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

@@ -1,9 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { normalizeMediaUrl } from "@/lib/api";
 
 export default function AboutSlideshow({ slides = [] }) {
-  const gallery = slides.length > 0 ? slides : ["https://picsum.photos/seed/nk-studio-1/1000/900"];
+  const gallery = useMemo(() => {
+    const normalized = (slides || []).map(normalizeMediaUrl).filter(Boolean);
+    return normalized.length > 0
+      ? normalized
+      : ["https://picsum.photos/seed/nk-studio-1/1000/900"];
+  }, [slides]);
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
 

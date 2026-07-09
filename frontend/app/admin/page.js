@@ -10,7 +10,7 @@ import {
   getSiteSettings,
   updateSiteSettings,
 } from "@/lib/adminApi";
-import { formatPrice } from "@/lib/api";
+import { formatPrice, normalizeMediaUrl } from "@/lib/api";
 import ImageUploader from "@/components/admin/ImageUploader";
 
 export default function AdminDashboard() {
@@ -31,7 +31,7 @@ export default function AdminDashboard() {
       ]);
       setProducts(p);
       setCollections(c);
-      setAboutSlides(settings.aboutSlides || []);
+      setAboutSlides((settings.aboutSlides || []).map(normalizeMediaUrl).filter(Boolean));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -59,8 +59,10 @@ export default function AdminDashboard() {
     setSavingSlides(true);
     setError("");
     try {
-      const updated = await updateSiteSettings({ aboutSlides });
-      setAboutSlides(updated.aboutSlides || []);
+      const updated = await updateSiteSettings({
+        aboutSlides: aboutSlides.map(normalizeMediaUrl).filter(Boolean),
+      });
+      setAboutSlides((updated.aboutSlides || []).map(normalizeMediaUrl).filter(Boolean));
     } catch (err) {
       setError(err.message);
     } finally {

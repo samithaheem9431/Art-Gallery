@@ -15,9 +15,11 @@ const upload = multer({
   },
 });
 
-function absoluteUrl(req, path) {
-  const base = process.env.PUBLIC_API_URL || `${req.protocol}://${req.get("host")}`;
-  return `${base}${path}`;
+function imageUrl(id) {
+  // Relative path so the Next.js /api rewrite (or same-origin proxy) can serve it
+  // in both local and production. Absolute PUBLIC_API_URL overrides when set.
+  const base = (process.env.PUBLIC_API_URL || "").replace(/\/$/, "");
+  return base ? `${base}/api/images/${id}` : `/api/images/${id}`;
 }
 
 // POST /api/images - upload one or more images (admin only)
@@ -35,7 +37,7 @@ router.post("/", requireAdmin, upload.array("images", 10), async (req, res, next
         })
       )
     );
-    const urls = saved.map((img) => absoluteUrl(req, `/api/images/${img._id}`));
+    const urls = saved.map((img) => imageUrl(img._id));
     res.status(201).json({ urls });
   } catch (err) {
     next(err);
