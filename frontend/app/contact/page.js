@@ -52,7 +52,7 @@ export default function ContactPage() {
           className="w-full border border-border px-4 py-3 text-sm outline-none focus:border-foreground"
         />
         <input
-          name="phone" placeholder="Phone (optional)" value={form.phone} onChange={handleChange}
+          required name="phone" placeholder="Phone" value={form.phone} onChange={handleChange}
           className="w-full border border-border px-4 py-3 text-sm outline-none focus:border-foreground"
         />
         <textarea
