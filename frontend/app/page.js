@@ -6,6 +6,8 @@ import ProductCard from "@/components/ProductCard";
 import Link from "next/link";
 import { getCollections, getProducts, getSiteSettings } from "@/lib/api";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [collections, featured, siteSettings] = await Promise.all([
     getCollections(),

@@ -1,12 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
-import { getCollection, getCollections } from "@/lib/api";
+import { getCollection } from "@/lib/api";
 
-export async function generateStaticParams() {
-  const collections = await getCollections();
-  return collections.map((c) => ({ slug: c.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;

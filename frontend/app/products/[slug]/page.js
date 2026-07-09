@@ -2,12 +2,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import ProductGallery from "@/components/ProductGallery";
 import AddToCartButton from "@/components/AddToCartButton";
-import { getProduct, getProducts, formatPrice } from "@/lib/api";
+import { getProduct, formatPrice } from "@/lib/api";
 
-export async function generateStaticParams() {
-  const products = await getProducts();
-  return products.map((p) => ({ slug: p.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;

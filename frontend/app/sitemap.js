@@ -2,6 +2,8 @@ import { getCollections, getProducts } from "@/lib/api";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap() {
   const [collections, products] = await Promise.all([getCollections(), getProducts()]);
 
