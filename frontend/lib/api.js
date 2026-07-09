@@ -1,4 +1,3 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 const defaultAboutSlides = [
   "https://picsum.photos/seed/nk-studio-1/1000/900",
   "https://picsum.photos/seed/nk-studio-2/1000/900",
@@ -7,35 +6,109 @@ const defaultAboutSlides = [
 
 const fetchOpts = { cache: "no-store" };
 
-async function safeFetch(path) {
-  try {
-    const res = await fetch(`${API_URL}${path}`, fetchOpts);
-    if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-    return await res.json();
-  } catch {
-    return null;
+function trimUrl(url) {
+  return url?.replace(/\/$/, "") || "";
+}
+
+function isLocalUrl(url) {
+  return /localhost|127\.0\.0\.1/i.test(url || "");
+}
+
+export function getApiUrl() {
+  const configured = trimUrl(process.env.NEXT_PUBLIC_API_URL);
+  const backend = trimUrl(process.env.BACKEND_URL);
+
+  if (typeof window === "undefined") {
+    if (backend) return `${backend}/api`;
+    if (configured && !isLocalUrl(configured)) {
+      return configured.endsWith("/api") ? configured : `${configured}/api`;
+    }
+    return "http://127.0.0.1:5000/api";
   }
+
+  if (configured && !isLocalUrl(configured)) {
+    return configured.endsWith("/api") ? configured : `${configured}/api`;
+  }
+
+  return "/api";
+}
+
+export function normalizeMediaUrl(url) {
+  if (!url || typeof url !== "string") return url;
+
+  const imagePath = url.match(/\/api\/images\/[a-f0-9]{24}$/i);
+  if (imagePath) return imagePath[0];
+
+  if (isLocalUrl(url)) {
+    const apiBase = getApiUrl().replace(/\/api$/, "");
+    return url.replace(/^https?:\/\/[^/]+/, apiBase || "");
+  }
+
+  return url;
+}
+
+function normalizeProduct(product) {
+  if (!product) return product;
+  return {
+    ...product,
+    images: Array.isArray(product.images) ? product.images.map(normalizeMediaUrl) : [],
+  };
+}
+
+function normalizeCollection(collection) {
+  if (!collection) return collection;
+  return {
+    ...collection,
+    image: normalizeMediaUrl(collection.image),
+  };
+}
+
+async function safeFetch(path) {
+  const url = `${getApiUrl()}${path}`;
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      const res = await fetch(url, fetchOpts);
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+      return await res.json();
+    } catch (error) {
+      if (attempt === 2) {
+        if (process.env.NODE_ENV === "development") {
+          console.error(`[api] ${url} failed:`, error.message);
+        }
+        return null;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 400));
+    }
+  }
+
+  return null;
 }
 
 export async function getCollections() {
   const data = await safeFetch("/collections");
-  return Array.isArray(data) ? data : [];
+  return Array.isArray(data) ? data.map(normalizeCollection) : [];
 }
 
 export async function getCollection(slug) {
   const data = await safeFetch(`/collections/${slug}`);
-  return data || null;
+  if (!data) return null;
+  return {
+    ...data,
+    collection: normalizeCollection(data.collection),
+    products: Array.isArray(data.products) ? data.products.map(normalizeProduct) : [],
+  };
 }
 
 export async function getProducts(params = {}) {
   const query = new URLSearchParams(params).toString();
   const data = await safeFetch(`/products${query ? `?${query}` : ""}`);
-  return Array.isArray(data) ? data : [];
+  return Array.isArray(data) ? data.map(normalizeProduct) : [];
 }
 
 export async function getProduct(slug) {
   const data = await safeFetch(`/products/${slug}`);
-  return data || null;
+  return normalizeProduct(data);
 }
 
 export async function getSiteSettings() {
@@ -45,13 +118,9 @@ export async function getSiteSettings() {
     ...data,
     aboutSlides:
       Array.isArray(data.aboutSlides) && data.aboutSlides.length > 0
-        ? data.aboutSlides
+        ? data.aboutSlides.map(normalizeMediaUrl)
         : defaultAboutSlides,
   };
-}
-
-export function getApiUrl() {
-  return API_URL;
 }
 
 export function formatPrice(value, currency = "PKR") {

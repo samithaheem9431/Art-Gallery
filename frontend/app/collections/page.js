@@ -1,5 +1,6 @@
 import CollectionsGrid from "@/components/CollectionsGrid";
 import ProductCard from "@/components/ProductCard";
+import ApiNotice from "@/components/ApiNotice";
 import { getCollections, getProducts } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +21,7 @@ export default async function CollectionsPage() {
       </div>
 
       <CollectionsGrid collections={collections} heading="Browse by Collection" />
+      {collections.length === 0 && <ApiNotice />}
 
       <section className="mx-auto max-w-[1400px] px-5 py-8 md:px-8">
         <h2 className="mb-10 text-3xl font-medium md:text-4xl">All Paintings</h2>

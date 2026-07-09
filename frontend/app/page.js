@@ -3,6 +3,7 @@ import AboutSlideshow from "@/components/AboutSlideshow";
 import ShippingPolicy from "@/components/ShippingPolicy";
 import CollectionsGrid from "@/components/CollectionsGrid";
 import ProductCard from "@/components/ProductCard";
+import ApiNotice from "@/components/ApiNotice";
 import Link from "next/link";
 import { getCollections, getProducts, getSiteSettings } from "@/lib/api";
 
@@ -20,7 +21,11 @@ export default async function HomePage() {
       <Hero />
       <AboutSlideshow slides={siteSettings.aboutSlides} />
       <ShippingPolicy />
-      <CollectionsGrid collections={collections} />
+      {collections.length === 0 ? (
+        <ApiNotice />
+      ) : (
+        <CollectionsGrid collections={collections} />
+      )}
 
       {featured.length > 0 && (
         <section className="mx-auto max-w-[1400px] px-5 py-16 md:px-8">
