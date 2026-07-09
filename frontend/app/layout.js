@@ -4,6 +4,7 @@ import { CartProvider } from "@/context/CartContext";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -48,6 +49,7 @@ export default function RootLayout({ children }) {
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
+          <WhatsAppButton />
         </CartProvider>
       </body>
     </html>
