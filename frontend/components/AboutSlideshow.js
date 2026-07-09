@@ -3,12 +3,18 @@
 import { useCallback, useEffect, useState } from "react";
 
 export default function AboutSlideshow({ slides = [] }) {
-  const gallery = slides.length > 0 ? slides : ["https://picsum.photos/seed/nk-studio-1/1000/900"];
+  const gallery = slides.length > 0 ? slides : [];
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
 
-  const next = useCallback(() => setIndex((i) => (i + 1) % gallery.length), [gallery.length]);
-  const prev = () => setIndex((i) => (i - 1 + gallery.length) % gallery.length);
+  const next = useCallback(() => {
+    if (gallery.length === 0) return;
+    setIndex((i) => (i + 1) % gallery.length);
+  }, [gallery.length]);
+  const prev = () => {
+    if (gallery.length === 0) return;
+    setIndex((i) => (i - 1 + gallery.length) % gallery.length);
+  };
 
   useEffect(() => {
     if (!playing) return;
@@ -21,6 +27,11 @@ export default function AboutSlideshow({ slides = [] }) {
       {/* Slideshow */}
       <div className="order-2 md:order-1">
         <div className="relative aspect-[10/9] w-full overflow-hidden">
+          {gallery.length === 0 && (
+            <div className="absolute inset-0 flex items-center justify-center bg-[#f4f2ee] text-sm text-muted">
+              No slideshow images set in admin panel
+            </div>
+          )}
           {gallery.map((src, i) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -37,9 +48,7 @@ export default function AboutSlideshow({ slides = [] }) {
           <button aria-label="Previous slide" onClick={prev} className="transition hover:text-foreground">
             &#8249;
           </button>
-          <span>
-            {index + 1}/{gallery.length}
-          </span>
+          <span>{gallery.length === 0 ? "0/0" : `${index + 1}/${gallery.length}`}</span>
           <button aria-label="Next slide" onClick={next} className="transition hover:text-foreground">
             &#8250;
           </button>
