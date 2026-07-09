@@ -1,7 +1,6 @@
 # Art-Gallery — MERN (Next.js) Website
 
-A full-stack art gallery / e-commerce website inspired by the design of
-[naimalkhawarart.com](https://naimalkhawarart.com/), rebuilt with a modern,
+A full-stack art gallery / e-commerce website, rebuilt with a modern,
 SEO-friendly stack, including an **admin panel** with image uploads.
 
 - **Frontend:** Next.js 16 (App Router) + React 19 + Tailwind CSS v4
