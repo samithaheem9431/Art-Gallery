@@ -44,14 +44,21 @@ router.post("/", requireAdmin, upload.array("images", 10), async (req, res, next
   }
 });
 
-// GET /api/images/:id - serve an image
+// GET /api/images/:id - serve an image from MongoDB (Multer upload)
 router.get("/:id", async (req, res, next) => {
   try {
-    const image = await Image.findById(req.params.id);
-    if (!image) return res.status(404).json({ message: "Image not found" });
-    res.set("Content-Type", image.contentType);
+    const image = await Image.findById(req.params.id).lean();
+    if (!image?.data) return res.status(404).json({ message: "Image not found" });
+
+    const buffer = Buffer.isBuffer(image.data)
+      ? image.data
+      : Buffer.from(image.data.buffer || image.data);
+
+    res.set("Content-Type", image.contentType || "application/octet-stream");
+    res.set("Content-Length", String(buffer.length));
     res.set("Cache-Control", "public, max-age=31536000, immutable");
-    res.send(image.data);
+    res.set("Cross-Origin-Resource-Policy", "cross-origin");
+    res.end(buffer);
   } catch (err) {
     next(err);
   }

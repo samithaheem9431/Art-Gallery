@@ -3,6 +3,8 @@ const backendUrl = process.env.BACKEND_URL || "http://127.0.0.1:5000";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async rewrites() {
+    // app/api/images/[id]/route.js takes priority for image binaries.
+    // Everything else under /api is proxied to Express.
     return [
       {
         source: "/api/:path*",

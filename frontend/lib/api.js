@@ -44,12 +44,12 @@ export function getApiUrl() {
 export function normalizeMediaUrl(url) {
   if (!url || typeof url !== "string") return url;
 
-  const imagePath = url.match(/\/api\/images\/[a-f0-9]{24}$/i);
-  if (imagePath) return imagePath[0];
+  // Always prefer same-origin /api/images/:id so Next can proxy Multer/Mongo images.
+  const match = url.match(/\/api\/images\/([a-f0-9]{24})/i);
+  if (match) return `/api/images/${match[1]}`;
 
   if (isLocalUrl(url)) {
-    const apiBase = getApiUrl().replace(/\/api$/, "");
-    return url.replace(/^https?:\/\/[^/]+/, apiBase || "");
+    return url.replace(/^https?:\/\/[^/]+/, "");
   }
 
   return url;
