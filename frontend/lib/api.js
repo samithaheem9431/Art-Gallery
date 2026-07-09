@@ -49,15 +49,21 @@ export async function getProduct(slug) {
 }
 
 export async function getSiteSettings() {
-  const data = await safeFetch("/site-settings");
-  if (!data) return { aboutSlides: defaultAboutSlides };
-  return {
-    ...data,
-    aboutSlides:
-      Array.isArray(data.aboutSlides) && data.aboutSlides.length > 0
-        ? data.aboutSlides
-        : defaultAboutSlides,
-  };
+  try {
+    // Always fetch fresh slideshow settings so admin updates appear immediately.
+    const res = await fetch(`${API_URL}/site-settings`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+    const data = await res.json();
+    return {
+      ...data,
+      aboutSlides:
+        Array.isArray(data.aboutSlides) && data.aboutSlides.length > 0
+          ? data.aboutSlides
+          : defaultAboutSlides,
+    };
+  } catch {
+    return { aboutSlides: defaultAboutSlides };
+  }
 }
 
 export function getApiUrl() {
