@@ -82,6 +82,9 @@ export default function Footer() {
           <p className="text-[13px] text-muted">
             © {new Date().getFullYear()}, ZB
           </p>
+          <p className="font-display text-[14px] italic tracking-[0.08em] text-muted/90">
+            Developed by SK
+          </p>
         </div>
       </div>
     </footer>
