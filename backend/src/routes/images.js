@@ -64,4 +64,15 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
+// DELETE /api/images/:id - remove image from MongoDB (admin)
+router.delete("/:id", requireAdmin, async (req, res, next) => {
+  try {
+    const image = await Image.findByIdAndDelete(req.params.id);
+    if (!image) return res.status(404).json({ message: "Image not found" });
+    res.json({ message: "Deleted", id: req.params.id });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

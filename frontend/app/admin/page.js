@@ -27,14 +27,15 @@ export default function AdminDashboard() {
 
   async function load() {
     setLoading(true);
+    setError("");
     try {
       const [p, c, settings] = await Promise.all([
         listProducts(),
         listCollections(),
         getSiteSettings(),
       ]);
-      setProducts(p);
-      setCollections(c);
+      setProducts(Array.isArray(p) ? p : []);
+      setCollections(Array.isArray(c) ? c : []);
       setAboutSlides((settings.aboutSlides || []).map(normalizeMediaUrl).filter(Boolean));
       setAboutTitle(settings.aboutTitle || "ABOUT THE ARTIST");
       setAboutText1(settings.aboutText1 || "");
@@ -52,14 +53,33 @@ export default function AdminDashboard() {
 
   async function handleDeleteProduct(id, title) {
     if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
-    await deleteProduct(id);
-    setProducts((prev) => prev.filter((p) => p._id !== id));
+    try {
+      await deleteProduct(id);
+      setProducts((prev) => prev.filter((p) => p._id !== id));
+    } catch (err) {
+      setError(err.message);
+    }
   }
 
   async function handleDeleteCollection(id, title) {
     if (!confirm(`Delete collection "${title}"?`)) return;
-    await deleteCollection(id);
-    setCollections((prev) => prev.filter((c) => c._id !== id));
+    try {
+      await deleteCollection(id);
+      setCollections((prev) => prev.filter((c) => c._id !== id));
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function persistAboutSlides(nextSlides) {
+    const updated = await updateSiteSettings({
+      aboutSlides: (nextSlides || []).map(normalizeMediaUrl).filter(Boolean),
+      aboutTitle,
+      aboutText1,
+      aboutText2,
+    });
+    setAboutSlides((updated.aboutSlides || []).map(normalizeMediaUrl).filter(Boolean));
+    setSavedMsg("Slideshow updated.");
   }
 
   async function handleSaveAbout() {
@@ -86,13 +106,21 @@ export default function AdminDashboard() {
   }
 
   if (loading) return <p className="text-muted">Loading…</p>;
-  if (error) return <p className="text-red-600">{error}</p>;
 
   const field =
     "w-full border border-border px-3 py-2.5 text-sm outline-none focus:border-foreground";
 
   return (
     <div className="space-y-12">
+      {error && (
+        <div className="border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+          <button type="button" onClick={() => setError("")} className="ml-3 underline">
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {/* Products */}
       <section>
         <div className="mb-4 flex items-center justify-between">
@@ -121,7 +149,7 @@ export default function AdminDashboard() {
                   <td className="px-4 py-2">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={p.images?.[0] || "https://picsum.photos/seed/x/80/80"}
+                      src={normalizeMediaUrl(p.images?.[0]) || "https://picsum.photos/seed/x/80/80"}
                       alt=""
                       className="h-12 w-12 object-cover"
                     />
@@ -173,7 +201,7 @@ export default function AdminDashboard() {
               <div className="mb-3 flex items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={c.image || "https://picsum.photos/seed/x/80/80"}
+                  src={normalizeMediaUrl(c.image) || "https://picsum.photos/seed/x/80/80"}
                   alt=""
                   className="h-14 w-14 object-cover"
                 />
@@ -195,9 +223,7 @@ export default function AdminDashboard() {
               </div>
             </div>
           ))}
-          {collections.length === 0 && (
-            <p className="text-muted">No collections yet.</p>
-          )}
+          {collections.length === 0 && <p className="text-muted">No collections yet.</p>}
         </div>
       </section>
 
@@ -206,7 +232,7 @@ export default function AdminDashboard() {
         <div className="mb-5">
           <h2 className="font-display text-2xl font-medium">About Section</h2>
           <p className="mt-1 text-sm text-muted">
-            Edit the homepage &quot;About the Artist&quot; title, text, and slideshow images.
+            Edit title/text, then manage slideshow images. Upload and delete save automatically.
           </p>
         </div>
 
@@ -242,7 +268,11 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <ImageUploader images={aboutSlides} onChange={setAboutSlides} />
+        <ImageUploader
+          images={aboutSlides}
+          onChange={setAboutSlides}
+          onPersist={persistAboutSlides}
+        />
 
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <button
@@ -250,10 +280,10 @@ export default function AdminDashboard() {
             disabled={savingAbout}
             className="bg-foreground px-4 py-2 text-sm text-background transition hover:opacity-85 disabled:opacity-50"
           >
-            {savingAbout ? "Saving..." : "Save about section"}
+            {savingAbout ? "Saving..." : "Save about text"}
           </button>
           <span className="text-xs text-muted">
-            {aboutSlides.length} image{aboutSlides.length === 1 ? "" : "s"} selected
+            {aboutSlides.length} image{aboutSlides.length === 1 ? "" : "s"} in slideshow
           </span>
           {savedMsg && <span className="text-xs text-green-700">{savedMsg}</span>}
         </div>

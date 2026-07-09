@@ -38,3 +38,24 @@ export async function GET(_req, { params }) {
     return NextResponse.json({ message: "Failed to load image" }, { status: 502 });
   }
 }
+
+export async function DELETE(req, { params }) {
+  const { id } = await params;
+
+  if (!id || !/^[a-f0-9]{24}$/i.test(id)) {
+    return NextResponse.json({ message: "Invalid image id" }, { status: 400 });
+  }
+
+  try {
+    const auth = req.headers.get("authorization") || "";
+    const res = await fetch(`${backendUrl}/api/images/${id}`, {
+      method: "DELETE",
+      headers: auth ? { Authorization: auth } : {},
+    });
+    const data = await res.json().catch(() => ({}));
+    return NextResponse.json(data, { status: res.status });
+  } catch (error) {
+    console.error("[image delete proxy]", error.message);
+    return NextResponse.json({ message: "Delete failed" }, { status: 502 });
+  }
+}

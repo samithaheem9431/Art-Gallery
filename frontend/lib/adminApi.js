@@ -90,7 +90,22 @@ export async function uploadImages(files) {
     headers: authHeaders(), // no content-type; browser sets multipart boundary
     body: form,
   });
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.message || "Upload failed");
-  return data.urls;
+  return data.urls || [];
+}
+
+export async function deleteImage(urlOrId) {
+  const match = String(urlOrId || "").match(/([a-f0-9]{24})/i);
+  if (!match) return;
+  const id = match[1];
+  const res = await fetch(`${getApiUrl()}/images/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok && res.status !== 404) {
+    throw new Error(data.message || "Delete failed");
+  }
+  return data;
 }
