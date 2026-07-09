@@ -15,7 +15,8 @@ export default function Header() {
   const { count } = useCart();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur">
+    <>
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-5 md:px-8">
         {/* Left: menu */}
         <div className="flex flex-1 items-center">
@@ -61,8 +62,9 @@ export default function Header() {
           </Link>
         </div>
       </div>
+    </header>
 
-      {/* Slide-in menu */}
+      {/* Slide-in menu (rendered outside the blurred header so `fixed` covers the full viewport) */}
       {menuOpen && (
         <div className="fixed inset-0 z-50" role="dialog" aria-modal="true">
           <div
@@ -96,9 +98,47 @@ export default function Header() {
                 </li>
               ))}
             </ul>
+
+            {/* Admin access */}
+            <div className="absolute inset-x-6 bottom-6 border-t border-border pt-5">
+              <Link
+                href="/admin/login"
+                onClick={() => setMenuOpen(false)}
+                className="group flex items-center gap-3 rounded-lg border border-border px-4 py-3 text-foreground transition hover:bg-foreground hover:text-background"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M12 2 4 5v6c0 5 3.4 8.3 8 10 4.6-1.7 8-5 8-10V5l-8-3Z" />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+                <span className="flex flex-col leading-tight">
+                  <span className="text-sm font-medium">Admin Panel</span>
+                  <span className="text-xs opacity-60 group-hover:opacity-80">Manage artwork</span>
+                </span>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  className="ml-auto"
+                >
+                  <path d="M9 6l6 6-6 6" />
+                </svg>
+              </Link>
+            </div>
           </nav>
         </div>
       )}
-    </header>
+    </>
   );
 }
