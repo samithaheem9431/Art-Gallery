@@ -53,7 +53,6 @@ export function getApiUrl() {
 export function normalizeMediaUrl(url) {
   if (!url || typeof url !== "string") return url;
 
-  // Always prefer same-origin /api/images/:id so Next can proxy Multer/Mongo images.
   const match = url.match(/\/api\/images\/([a-f0-9]{24})/i);
   if (match) return `/api/images/${match[1]}`;
 
@@ -62,6 +61,21 @@ export function normalizeMediaUrl(url) {
   }
 
   return url;
+}
+
+// Use in admin/browser so thumbnails load from the backend directly (not blank previews)
+export function getDisplayImageUrl(url) {
+  if (!url || typeof url !== "string") return url;
+
+  const match = url.match(/\/api\/images\/([a-f0-9]{24})/i);
+  if (!match) return normalizeMediaUrl(url);
+
+  if (typeof window !== "undefined") {
+    const base = getApiUrl().replace(/\/api\/?$/i, "");
+    return `${base}/api/images/${match[1]}`;
+  }
+
+  return `/api/images/${match[1]}`;
 }
 
 function normalizeProduct(product) {

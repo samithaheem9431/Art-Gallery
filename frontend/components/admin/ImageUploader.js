@@ -1,21 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { deleteImage, uploadImages } from "@/lib/adminApi";
-import { normalizeMediaUrl } from "@/lib/api";
+import { getDisplayImageUrl } from "@/lib/api";
 
 export default function ImageUploader({ images = [], onChange, onPersist }) {
   const [uploading, setUploading] = useState(false);
   const [removing, setRemoving] = useState("");
   const [error, setError] = useState("");
+  const [localPreviews, setLocalPreviews] = useState([]);
+
+  useEffect(() => {
+    return () => {
+      localPreviews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [localPreviews]);
 
   async function handleFiles(e) {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     setError("");
+
+    const previewUrls = Array.from(files).map((file) => URL.createObjectURL(file));
+    setLocalPreviews(previewUrls);
     setUploading(true);
+
     try {
-      const urls = (await uploadImages(files)).map(normalizeMediaUrl).filter(Boolean);
+      const urls = (await uploadImages(files)).map(getDisplayImageUrl).filter(Boolean);
       if (urls.length === 0) throw new Error("Upload returned no image URLs");
       const next = [...images, ...urls];
       onChange(next);
@@ -23,6 +34,8 @@ export default function ImageUploader({ images = [], onChange, onPersist }) {
     } catch (err) {
       setError(err.message || "Upload failed");
     } finally {
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+      setLocalPreviews([]);
       setUploading(false);
       e.target.value = "";
     }
@@ -49,31 +62,49 @@ export default function ImageUploader({ images = [], onChange, onPersist }) {
     }
   }
 
+  const previewItems = [
+    ...images.map((url) => ({ key: url, src: getDisplayImageUrl(url), removable: url })),
+    ...localPreviews.map((url) => ({ key: url, src: url, removable: null })),
+  ];
+
   return (
     <div>
       <label className="mb-2 block text-sm text-muted">Slideshow images</label>
 
-      {images.length > 0 ? (
+      {previewItems.length > 0 ? (
         <div className="mb-3 flex flex-wrap gap-3">
-          {images.map((url, idx) => {
-            const src = normalizeMediaUrl(url);
-            const busy = removing === url;
+          {previewItems.map((item, idx) => {
+            const busy = item.removable && removing === item.removable;
             return (
               <div
-                key={`${src}-${idx}`}
+                key={`${item.key}-${idx}`}
                 className="relative h-24 w-24 overflow-hidden border border-border bg-[#f4f2ee]"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt="" className="h-full w-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => removeImage(url)}
-                  disabled={busy || uploading}
-                  className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center bg-black/70 text-xs text-white disabled:opacity-50"
-                  aria-label="Remove image"
-                >
-                  {busy ? "…" : "×"}
-                </button>
+                <img
+                  src={item.src}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.opacity = "0.3";
+                  }}
+                />
+                {item.removable && (
+                  <button
+                    type="button"
+                    onClick={() => removeImage(item.removable)}
+                    disabled={busy || uploading}
+                    className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center bg-black/70 text-xs text-white disabled:opacity-50"
+                    aria-label="Remove image"
+                  >
+                    {busy ? "…" : "×"}
+                  </button>
+                )}
+                {!item.removable && uploading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30 text-xs text-white">
+                    …
+                  </div>
+                )}
               </div>
             );
           })}

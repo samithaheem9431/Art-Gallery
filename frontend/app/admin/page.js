@@ -10,7 +10,7 @@ import {
   getSiteSettings,
   updateSiteSettings,
 } from "@/lib/adminApi";
-import { formatPrice, normalizeMediaUrl } from "@/lib/api";
+import { formatPrice, getDisplayImageUrl, normalizeMediaUrl } from "@/lib/api";
 import ImageUploader from "@/components/admin/ImageUploader";
 
 export default function AdminDashboard() {
@@ -36,7 +36,7 @@ export default function AdminDashboard() {
       ]);
       setProducts(Array.isArray(p) ? p : []);
       setCollections(Array.isArray(c) ? c : []);
-      setAboutSlides((settings.aboutSlides || []).map(normalizeMediaUrl).filter(Boolean));
+      setAboutSlides((settings.aboutSlides || []).map(getDisplayImageUrl).filter(Boolean));
       setAboutTitle(settings.aboutTitle || "ABOUT THE ARTIST");
       setAboutText1(settings.aboutText1 || "");
       setAboutText2(settings.aboutText2 || "");
@@ -78,7 +78,7 @@ export default function AdminDashboard() {
       aboutText1,
       aboutText2,
     });
-    setAboutSlides((updated.aboutSlides || []).map(normalizeMediaUrl).filter(Boolean));
+    setAboutSlides((updated.aboutSlides || []).map(getDisplayImageUrl).filter(Boolean));
     setSavedMsg("Slideshow updated.");
   }
 
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
         aboutText1,
         aboutText2,
       });
-      setAboutSlides((updated.aboutSlides || []).map(normalizeMediaUrl).filter(Boolean));
+      setAboutSlides((updated.aboutSlides || []).map(getDisplayImageUrl).filter(Boolean));
       setAboutTitle(updated.aboutTitle || "ABOUT THE ARTIST");
       setAboutText1(updated.aboutText1 || "");
       setAboutText2(updated.aboutText2 || "");
@@ -149,7 +149,7 @@ export default function AdminDashboard() {
                   <td className="px-4 py-2">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={normalizeMediaUrl(p.images?.[0]) || "https://picsum.photos/seed/x/80/80"}
+                      src={getDisplayImageUrl(p.images?.[0]) || "https://picsum.photos/seed/x/80/80"}
                       alt=""
                       className="h-12 w-12 object-cover"
                     />
@@ -201,7 +201,7 @@ export default function AdminDashboard() {
               <div className="mb-3 flex items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={normalizeMediaUrl(c.image) || "https://picsum.photos/seed/x/80/80"}
+                  src={getDisplayImageUrl(c.image) || "https://picsum.photos/seed/x/80/80"}
                   alt=""
                   className="h-14 w-14 object-cover"
                 />
