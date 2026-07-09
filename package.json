@@ -1,0 +1,27 @@
+{
+  "name": "art-project",
+  "version": "1.0.0",
+  "description": "A full-stack art gallery / e-commerce website built with a modern, SEO-friendly stack, including an **admin panel** with image uploads.",
+  "main": "index.js",
+  "scripts": {
+    "clean-ports": "kill-port 3000 5000 || echo Ports were already free",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev": "npm run clean-ports && concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samithaheem9431/Art-Gallery.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/samithaheem9431/Art-Gallery/issues"
+  },
+  "homepage": "https://github.com/samithaheem9431/Art-Gallery#readme",
+  "devDependencies": {
+    "concurrently": "^10.0.3",
+    "kill-port": "^2.0.1"
+  }
+}

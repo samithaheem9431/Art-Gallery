@@ -1,22 +1,24 @@
 import { fallbackCollections, fallbackProducts } from "./fallbackData";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const ENABLE_FALLBACK_DATA = process.env.NEXT_PUBLIC_ENABLE_FALLBACK_DATA === "true";
 const defaultAboutSlides = [
   "https://picsum.photos/seed/nk-studio-1/1000/900",
   "https://picsum.photos/seed/nk-studio-2/1000/900",
   "https://picsum.photos/seed/nk-studio-3/1000/900",
 ];
 
-// Revalidate server-fetched data every 60s (ISR-friendly, good for SEO)
-const fetchOpts = { next: { revalidate: 60 } };
+// Always read fresh data so admin updates appear immediately on the site.
+const fetchOpts = { cache: "no-store" };
 
 async function safeFetch(path) {
   try {
     const res = await fetch(`${API_URL}${path}`, fetchOpts);
     if (!res.ok) throw new Error(`Request failed: ${res.status}`);
     return await res.json();
-  } catch {
-    return null; // caller falls back to local data
+  } catch (error) {
+    if (ENABLE_FALLBACK_DATA) return null;
+    throw new Error(`API fetch failed for ${path}: ${error.message}`);
   }
 }
 
