@@ -11,8 +11,8 @@ const policyLinks = [
 export default function Footer() {
   return (
     <footer className="mt-24 border-t border-border bg-background">
-      <div className="mx-auto max-w-[1400px] px-5 py-16 md:px-8">
-        <div className="flex flex-col items-center gap-8 text-center">
+      <div className="mx-auto max-w-[1400px] px-5 pb-7 pt-12 md:px-8">
+        <div className="flex flex-col items-center gap-6 text-center">
           {/* Social */}
           <div className="flex items-center gap-6">
             <a
@@ -79,11 +79,11 @@ export default function Footer() {
             ))}
           </ul>
 
-          <p className="text-[13px] text-muted">
-            © {new Date().getFullYear()}, ZB
-          </p>
+          <p className="text-[13px] text-muted">© {new Date().getFullYear()}, ZB</p>
+        </div>
+        <div className="mt-4 flex justify-end">
           <p className="font-display text-[14px] italic tracking-[0.08em] text-muted/90">
-            Developed by SK
+            Developed by <span className="font-semibold text-foreground">SK</span>
           </p>
         </div>
       </div>
