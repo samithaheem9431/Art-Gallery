@@ -16,7 +16,7 @@ export default function Footer() {
           {/* Social */}
           <div className="flex items-center gap-6">
             <a
-              href="mailto:hello@naimalkhawarart.com"
+              href="mailto:hello@zarminabashirart.com"
               aria-label="Email"
               className="text-foreground transition hover:opacity-60"
             >
@@ -80,7 +80,7 @@ export default function Footer() {
           </ul>
 
           <p className="text-[13px] text-muted">
-            © {new Date().getFullYear()}, NK
+            © {new Date().getFullYear()}, ZB
           </p>
         </div>
       </div>

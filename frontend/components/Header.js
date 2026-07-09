@@ -37,7 +37,7 @@ export default function Header() {
           href="/"
           className="font-display text-3xl font-medium tracking-[0.25em] text-foreground"
         >
-          NK
+          ZB
         </Link>
 
         {/* Right: search + cart */}

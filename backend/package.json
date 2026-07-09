@@ -1,7 +1,7 @@
 {
   "name": "nk-art-backend",
   "version": "1.0.0",
-  "description": "Express + MongoDB backend for the Naimal Khawar Art website clone",
+  "description": "Express + MongoDB backend for the Zarmina Bashir Art website",
   "type": "module",
   "main": "src/server.js",
   "scripts": {

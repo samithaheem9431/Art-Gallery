@@ -1,6 +1,6 @@
-# Art-Gallery — MERN (Next.js) Website
+# Zarmina Bashir Art — MERN (Next.js) Website
 
-A full-stack art gallery / e-commerce website, rebuilt with a modern,
+A full-stack art gallery / e-commerce website built with a modern,
 SEO-friendly stack, including an **admin panel** with image uploads.
 
 - **Frontend:** Next.js 16 (App Router) + React 19 + Tailwind CSS v4
@@ -170,7 +170,7 @@ and metadata use the correct URLs.
   `components/Hero.js`, others come from the seeded data in `backend/src/seed.js`.
 - **Products/Collections:** edit `backend/src/seed.js` and re-run `npm run seed`,
   or build a small admin later to manage them.
-- **Text/branding:** logo "NK" is in `components/Header.js`; site metadata is in
+- **Text/branding:** logo "ZB" is in `components/Header.js`; site metadata is in
   `app/layout.js`.
 
 ---

@@ -22,15 +22,15 @@ const jost = Jost({
 export const metadata = {
   metadataBase: new URL("http://localhost:3000"),
   title: {
-    default: "Naimal Khawar Art — Original Paintings",
-    template: "%s | Naimal Khawar Art",
+    default: "Zarmina Bashir Art — Original Paintings",
+    template: "%s | Zarmina Bashir Art",
   },
   description:
-    "Original paintings by Naimal Khawar, a painter based in Islamabad, Pakistan. Explore Stallions, Figurative and Abstract collections.",
-  keywords: ["Naimal Khawar", "art", "paintings", "Pakistani art", "oil painting", "abstract art"],
+    "Original paintings by Zarmina Bashir, a painter based in Islamabad, Pakistan. Explore Stallions, Figurative and Abstract collections.",
+  keywords: ["Zarmina Bashir", "art", "paintings", "Pakistani art", "oil painting", "abstract art"],
   openGraph: {
-    title: "Naimal Khawar Art — Original Paintings",
-    description: "Original paintings by Naimal Khawar. Explore the collections.",
+    title: "Zarmina Bashir Art — Original Paintings",
+    description: "Original paintings by Zarmina Bashir. Explore the collections.",
     type: "website",
     locale: "en_US",
   },

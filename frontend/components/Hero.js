@@ -15,7 +15,7 @@ export default function Hero() {
 
       <div className="relative z-10 flex flex-col items-center px-6 text-center animate-fade-in">
         <h1 className="font-display text-5xl font-light leading-[1.05] tracking-wide text-white sm:text-6xl md:text-7xl lg:text-8xl">
-          NAIMAL KHAWAR
+          ZARMINA BASHIR
           <br />
           ART
         </h1>

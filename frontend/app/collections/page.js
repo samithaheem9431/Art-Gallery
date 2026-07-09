@@ -4,7 +4,7 @@ import { getCollections, getProducts } from "@/lib/api";
 
 export const metadata = {
   title: "Collections",
-  description: "Browse all collections and original paintings by Naimal Khawar.",
+  description: "Browse all collections and original paintings by Zarmina Bashir.",
 };
 
 export default async function CollectionsPage() {

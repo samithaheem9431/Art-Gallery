@@ -64,12 +64,12 @@ export default function AboutSlideshow() {
           ABOUT THE ARTIST
         </h2>
         <p className="mb-4 leading-relaxed text-foreground/80">
-          Naimal Khawar is a painter based in Islamabad, Pakistan. After graduating with a
+          Zarmina Bashir is a painter based in Islamabad, Pakistan. After graduating with a
           distinction from NCA (National College of Arts), she joined the University of Arts London
           where she further studied different techniques of painting.
         </p>
         <p className="leading-relaxed text-foreground/80">
-          Khawar aims to achieve a balance between colour luminosity but also to break contrast
+          Bashir aims to achieve a balance between colour luminosity but also to break contrast
           between harmony and chaos.
         </p>
       </div>
