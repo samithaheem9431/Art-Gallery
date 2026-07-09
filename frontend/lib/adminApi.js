@@ -77,6 +77,9 @@ export const createCollection = (body) => request("/collections", { method: "POS
 export const updateCollection = (id, body) =>
   request(`/collections/${id}`, { method: "PUT", body });
 export const deleteCollection = (id) => request(`/collections/${id}`, { method: "DELETE" });
+export const getSiteSettings = () => request("/site-settings");
+export const updateSiteSettings = (body) =>
+  request("/site-settings", { method: "PUT", body });
 
 // Image upload (multipart)
 export async function uploadImages(files) {

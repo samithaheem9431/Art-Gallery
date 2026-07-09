@@ -9,6 +9,7 @@ import contactRouter from "./routes/contact.js";
 import ordersRouter from "./routes/orders.js";
 import adminRouter from "./routes/admin.js";
 import imagesRouter from "./routes/images.js";
+import siteSettingsRouter from "./routes/siteSettings.js";
 
 dotenv.config();
 
@@ -51,6 +52,7 @@ app.use(express.json());
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 app.use("/api/admin", adminRouter);
 app.use("/api/images", imagesRouter);
+app.use("/api/site-settings", siteSettingsRouter);
 app.use("/api/collections", collectionsRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/contact", contactRouter);

@@ -4,18 +4,19 @@ import ShippingPolicy from "@/components/ShippingPolicy";
 import CollectionsGrid from "@/components/CollectionsGrid";
 import ProductCard from "@/components/ProductCard";
 import Link from "next/link";
-import { getCollections, getProducts } from "@/lib/api";
+import { getCollections, getProducts, getSiteSettings } from "@/lib/api";
 
 export default async function HomePage() {
-  const [collections, featured] = await Promise.all([
+  const [collections, featured, siteSettings] = await Promise.all([
     getCollections(),
     getProducts({ featured: "true" }),
+    getSiteSettings(),
   ]);
 
   return (
     <>
       <Hero />
-      <AboutSlideshow />
+      <AboutSlideshow slides={siteSettings.aboutSlides} />
       <ShippingPolicy />
       <CollectionsGrid collections={collections} />
 

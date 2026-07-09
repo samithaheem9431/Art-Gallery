@@ -7,21 +7,31 @@ import {
   listCollections,
   deleteProduct,
   deleteCollection,
+  getSiteSettings,
+  updateSiteSettings,
 } from "@/lib/adminApi";
 import { formatPrice } from "@/lib/api";
+import ImageUploader from "@/components/admin/ImageUploader";
 
 export default function AdminDashboard() {
   const [products, setProducts] = useState([]);
   const [collections, setCollections] = useState([]);
+  const [aboutSlides, setAboutSlides] = useState([]);
+  const [savingSlides, setSavingSlides] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   async function load() {
     setLoading(true);
     try {
-      const [p, c] = await Promise.all([listProducts(), listCollections()]);
+      const [p, c, settings] = await Promise.all([
+        listProducts(),
+        listCollections(),
+        getSiteSettings(),
+      ]);
       setProducts(p);
       setCollections(c);
+      setAboutSlides(settings.aboutSlides || []);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -43,6 +53,19 @@ export default function AdminDashboard() {
     if (!confirm(`Delete collection "${title}"?`)) return;
     await deleteCollection(id);
     setCollections((prev) => prev.filter((c) => c._id !== id));
+  }
+
+  async function handleSaveSlides() {
+    setSavingSlides(true);
+    setError("");
+    try {
+      const updated = await updateSiteSettings({ aboutSlides });
+      setAboutSlides(updated.aboutSlides || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingSlides(false);
+    }
   }
 
   if (loading) return <p className="text-muted">Loading…</p>;
@@ -155,6 +178,31 @@ export default function AdminDashboard() {
           {collections.length === 0 && (
             <p className="text-muted">No collections yet.</p>
           )}
+        </div>
+      </section>
+
+      {/* About slideshow settings */}
+      <section className="border border-border p-5 md:p-6">
+        <div className="mb-5">
+          <h2 className="font-display text-2xl font-medium">About Section Slideshow</h2>
+          <p className="mt-1 text-sm text-muted">
+            These images are shown in the homepage transition slider under "About the Artist".
+          </p>
+        </div>
+
+        <ImageUploader images={aboutSlides} onChange={setAboutSlides} />
+
+        <div className="mt-5 flex items-center gap-3">
+          <button
+            onClick={handleSaveSlides}
+            disabled={savingSlides}
+            className="bg-foreground px-4 py-2 text-sm text-background transition hover:opacity-85 disabled:opacity-50"
+          >
+            {savingSlides ? "Saving..." : "Save slideshow images"}
+          </button>
+          <span className="text-xs text-muted">
+            {aboutSlides.length} image{aboutSlides.length === 1 ? "" : "s"} selected
+          </span>
         </div>
       </section>
     </div>

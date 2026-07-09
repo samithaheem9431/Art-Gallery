@@ -1,6 +1,11 @@
 import { fallbackCollections, fallbackProducts } from "./fallbackData";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const defaultAboutSlides = [
+  "https://picsum.photos/seed/nk-studio-1/1000/900",
+  "https://picsum.photos/seed/nk-studio-2/1000/900",
+  "https://picsum.photos/seed/nk-studio-3/1000/900",
+];
 
 // Revalidate server-fetched data every 60s (ISR-friendly, good for SEO)
 const fetchOpts = { next: { revalidate: 60 } };
@@ -41,6 +46,18 @@ export async function getProducts(params = {}) {
 export async function getProduct(slug) {
   const data = await safeFetch(`/products/${slug}`);
   return data || fallbackProducts.find((p) => p.slug === slug) || null;
+}
+
+export async function getSiteSettings() {
+  const data = await safeFetch("/site-settings");
+  if (!data) return { aboutSlides: defaultAboutSlides };
+  return {
+    ...data,
+    aboutSlides:
+      Array.isArray(data.aboutSlides) && data.aboutSlides.length > 0
+        ? data.aboutSlides
+        : defaultAboutSlides,
+  };
 }
 
 export function getApiUrl() {

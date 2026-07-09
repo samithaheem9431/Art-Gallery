@@ -2,18 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-const slides = [
-  "https://picsum.photos/seed/nk-studio-1/1000/900",
-  "https://picsum.photos/seed/nk-studio-2/1000/900",
-  "https://picsum.photos/seed/nk-studio-3/1000/900",
-];
-
-export default function AboutSlideshow() {
+export default function AboutSlideshow({ slides = [] }) {
+  const gallery = slides.length > 0 ? slides : ["https://picsum.photos/seed/nk-studio-1/1000/900"];
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
 
-  const next = useCallback(() => setIndex((i) => (i + 1) % slides.length), []);
-  const prev = () => setIndex((i) => (i - 1 + slides.length) % slides.length);
+  const next = useCallback(() => setIndex((i) => (i + 1) % gallery.length), [gallery.length]);
+  const prev = () => setIndex((i) => (i - 1 + gallery.length) % gallery.length);
 
   useEffect(() => {
     if (!playing) return;
@@ -26,7 +21,7 @@ export default function AboutSlideshow() {
       {/* Slideshow */}
       <div className="order-2 md:order-1">
         <div className="relative aspect-[10/9] w-full overflow-hidden">
-          {slides.map((src, i) => (
+          {gallery.map((src, i) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               key={src}
@@ -43,7 +38,7 @@ export default function AboutSlideshow() {
             &#8249;
           </button>
           <span>
-            {index + 1}/{slides.length}
+            {index + 1}/{gallery.length}
           </span>
           <button aria-label="Next slide" onClick={next} className="transition hover:text-foreground">
             &#8250;
