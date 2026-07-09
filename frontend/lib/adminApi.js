@@ -23,11 +23,18 @@ function authHeaders(extra = {}) {
 }
 
 export async function adminLogin(password) {
-  const res = await fetch(`${getApiUrl()}/admin/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ password }),
-  });
+  let res;
+  try {
+    res = await fetch(`${getApiUrl()}/admin/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+  } catch {
+    throw new Error(
+      "Cannot reach the API. On Vercel, set NEXT_PUBLIC_API_URL to your Render backend (…/api) and redeploy."
+    );
+  }
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Login failed");
   setToken(data.token);
