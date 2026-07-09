@@ -2,7 +2,8 @@
 
 import { usePathname } from "next/navigation";
 
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "";
+const WHATSAPP_NUMBER =
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.trim() || "923144965089";
 const DEFAULT_MESSAGE = "Hello! I would like to enquire about your artwork.";
 
 function whatsappUrl(number, message) {
@@ -24,7 +25,7 @@ export default function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"
-      className="fixed bottom-6 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_4px_20px_rgba(37,211,102,0.45)] transition hover:scale-105 hover:bg-[#20bd5a] active:scale-95 md:bottom-8 md:right-8 md:h-[4.5rem] md:w-[4.5rem]"
+      className="fixed bottom-6 right-6 z-[9999] flex h-16 w-16 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_4px_20px_rgba(37,211,102,0.45)] transition hover:scale-105 hover:bg-[#20bd5a] active:scale-95 md:bottom-8 md:right-8 md:h-[4.5rem] md:w-[4.5rem]"
     >
       <svg viewBox="0 0 32 32" className="h-9 w-9 md:h-10 md:w-10" aria-hidden="true">
         <path
