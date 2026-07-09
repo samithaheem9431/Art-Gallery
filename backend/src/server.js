@@ -68,6 +68,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Server error" });
 });
 
-connectDB(process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/nk_art").then(() => {
+connectDB(process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/nk_art").finally(() => {
   app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));
 });

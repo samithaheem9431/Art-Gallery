@@ -20,14 +20,16 @@ export default function ContactPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || "Failed to send message");
       setForm({ name: "", email: "", phone: "", message: "" });
       setStatus({ state: "success", message: data.message });
-    } catch {
+    } catch (err) {
       setStatus({
         state: "error",
-        message: "Could not send message. Make sure the backend is running and try again.",
+        message:
+          err?.message ||
+          "Could not send message. Error Occured",
       });
     }
   }
