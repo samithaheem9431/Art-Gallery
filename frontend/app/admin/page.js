@@ -17,9 +17,13 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState([]);
   const [collections, setCollections] = useState([]);
   const [aboutSlides, setAboutSlides] = useState([]);
-  const [savingSlides, setSavingSlides] = useState(false);
+  const [aboutTitle, setAboutTitle] = useState("ABOUT THE ARTIST");
+  const [aboutText1, setAboutText1] = useState("");
+  const [aboutText2, setAboutText2] = useState("");
+  const [savingAbout, setSavingAbout] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [savedMsg, setSavedMsg] = useState("");
 
   async function load() {
     setLoading(true);
@@ -32,6 +36,9 @@ export default function AdminDashboard() {
       setProducts(p);
       setCollections(c);
       setAboutSlides((settings.aboutSlides || []).map(normalizeMediaUrl).filter(Boolean));
+      setAboutTitle(settings.aboutTitle || "ABOUT THE ARTIST");
+      setAboutText1(settings.aboutText1 || "");
+      setAboutText2(settings.aboutText2 || "");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -55,23 +62,34 @@ export default function AdminDashboard() {
     setCollections((prev) => prev.filter((c) => c._id !== id));
   }
 
-  async function handleSaveSlides() {
-    setSavingSlides(true);
+  async function handleSaveAbout() {
+    setSavingAbout(true);
     setError("");
+    setSavedMsg("");
     try {
       const updated = await updateSiteSettings({
         aboutSlides: aboutSlides.map(normalizeMediaUrl).filter(Boolean),
+        aboutTitle,
+        aboutText1,
+        aboutText2,
       });
       setAboutSlides((updated.aboutSlides || []).map(normalizeMediaUrl).filter(Boolean));
+      setAboutTitle(updated.aboutTitle || "ABOUT THE ARTIST");
+      setAboutText1(updated.aboutText1 || "");
+      setAboutText2(updated.aboutText2 || "");
+      setSavedMsg("About section saved.");
     } catch (err) {
       setError(err.message);
     } finally {
-      setSavingSlides(false);
+      setSavingAbout(false);
     }
   }
 
   if (loading) return <p className="text-muted">Loading…</p>;
   if (error) return <p className="text-red-600">{error}</p>;
+
+  const field =
+    "w-full border border-border px-3 py-2.5 text-sm outline-none focus:border-foreground";
 
   return (
     <div className="space-y-12">
@@ -183,28 +201,61 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      {/* About slideshow settings */}
+      {/* About section settings */}
       <section className="border border-border p-5 md:p-6">
         <div className="mb-5">
-          <h2 className="font-display text-2xl font-medium">About Section Slideshow</h2>
+          <h2 className="font-display text-2xl font-medium">About Section</h2>
           <p className="mt-1 text-sm text-muted">
-            These images are shown in the homepage transition slider under "About the Artist".
+            Edit the homepage &quot;About the Artist&quot; title, text, and slideshow images.
           </p>
+        </div>
+
+        <div className="mb-5 space-y-4">
+          <div>
+            <label className="mb-1 block text-sm text-muted">Title</label>
+            <input
+              value={aboutTitle}
+              onChange={(e) => setAboutTitle(e.target.value)}
+              className={field}
+              placeholder="ABOUT THE ARTIST"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm text-muted">Paragraph 1</label>
+            <textarea
+              rows={4}
+              value={aboutText1}
+              onChange={(e) => setAboutText1(e.target.value)}
+              className={field}
+              placeholder="First about paragraph…"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm text-muted">Paragraph 2</label>
+            <textarea
+              rows={3}
+              value={aboutText2}
+              onChange={(e) => setAboutText2(e.target.value)}
+              className={field}
+              placeholder="Second about paragraph…"
+            />
+          </div>
         </div>
 
         <ImageUploader images={aboutSlides} onChange={setAboutSlides} />
 
-        <div className="mt-5 flex items-center gap-3">
+        <div className="mt-5 flex flex-wrap items-center gap-3">
           <button
-            onClick={handleSaveSlides}
-            disabled={savingSlides}
+            onClick={handleSaveAbout}
+            disabled={savingAbout}
             className="bg-foreground px-4 py-2 text-sm text-background transition hover:opacity-85 disabled:opacity-50"
           >
-            {savingSlides ? "Saving..." : "Save slideshow images"}
+            {savingAbout ? "Saving..." : "Save about section"}
           </button>
           <span className="text-xs text-muted">
             {aboutSlides.length} image{aboutSlides.length === 1 ? "" : "s"} selected
           </span>
+          {savedMsg && <span className="text-xs text-green-700">{savedMsg}</span>}
         </div>
       </section>
     </div>

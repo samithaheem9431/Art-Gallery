@@ -4,6 +4,14 @@ const defaultAboutSlides = [
   "https://picsum.photos/seed/nk-studio-3/1000/900",
 ];
 
+const defaultAbout = {
+  aboutTitle: "ABOUT THE ARTIST",
+  aboutText1:
+    "Zarmina Bashir is a painter based in Islamabad, Pakistan. After graduating with a distinction from NCA (National College of Arts), she joined the University of Arts London where she further studied different techniques of painting.",
+  aboutText2:
+    "Bashir aims to achieve a balance between colour luminosity but also to break contrast between harmony and chaos.",
+};
+
 const fetchOpts = { cache: "no-store" };
 
 function trimUrl(url) {
@@ -113,13 +121,21 @@ export async function getProduct(slug) {
 
 export async function getSiteSettings() {
   const data = await safeFetch("/site-settings");
-  if (!data) return { aboutSlides: defaultAboutSlides };
+  if (!data) {
+    return {
+      aboutSlides: defaultAboutSlides,
+      ...defaultAbout,
+    };
+  }
   return {
     ...data,
     aboutSlides:
       Array.isArray(data.aboutSlides) && data.aboutSlides.length > 0
         ? data.aboutSlides.map(normalizeMediaUrl)
         : defaultAboutSlides,
+    aboutTitle: data.aboutTitle || defaultAbout.aboutTitle,
+    aboutText1: data.aboutText1 || defaultAbout.aboutText1,
+    aboutText2: data.aboutText2 || defaultAbout.aboutText2,
   };
 }
 

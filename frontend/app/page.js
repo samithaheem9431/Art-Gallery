@@ -19,7 +19,12 @@ export default async function HomePage() {
   return (
     <>
       <Hero />
-      <AboutSlideshow slides={siteSettings.aboutSlides} />
+      <AboutSlideshow
+        slides={siteSettings.aboutSlides}
+        title={siteSettings.aboutTitle}
+        text1={siteSettings.aboutText1}
+        text2={siteSettings.aboutText2}
+      />
       <ShippingPolicy />
       {collections.length === 0 ? (
         <ApiNotice />

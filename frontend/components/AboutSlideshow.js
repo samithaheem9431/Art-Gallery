@@ -3,7 +3,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { normalizeMediaUrl } from "@/lib/api";
 
-export default function AboutSlideshow({ slides = [] }) {
+export default function AboutSlideshow({
+  slides = [],
+  title = "ABOUT THE ARTIST",
+  text1 = "",
+  text2 = "",
+}) {
   const gallery = useMemo(() => {
     const normalized = (slides || []).map(normalizeMediaUrl).filter(Boolean);
     return normalized.length > 0
@@ -61,18 +66,9 @@ export default function AboutSlideshow({ slides = [] }) {
 
       {/* Text */}
       <div className="order-1 md:order-2">
-        <h2 className="mb-6 text-3xl font-medium tracking-wide md:text-4xl">
-          ABOUT THE ARTIST
-        </h2>
-        <p className="mb-4 leading-relaxed text-foreground/80">
-          Zarmina Bashir is a painter based in Islamabad, Pakistan. After graduating with a
-          distinction from NCA (National College of Arts), she joined the University of Arts London
-          where she further studied different techniques of painting.
-        </p>
-        <p className="leading-relaxed text-foreground/80">
-          Bashir aims to achieve a balance between colour luminosity but also to break contrast
-          between harmony and chaos.
-        </p>
+        <h2 className="mb-6 text-3xl font-medium tracking-wide md:text-4xl">{title}</h2>
+        {text1 && <p className="mb-4 leading-relaxed text-foreground/80 whitespace-pre-line">{text1}</p>}
+        {text2 && <p className="leading-relaxed text-foreground/80 whitespace-pre-line">{text2}</p>}
       </div>
     </section>
   );
