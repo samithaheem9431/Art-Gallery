@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
-
-const backendUrl = (process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000")
-  .replace(/\/$/, "")
-  .replace(/\/api$/, "");
+import { getBackendBaseUrl } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +11,7 @@ export async function GET(_req, { params }) {
   }
 
   try {
+    const backendUrl = getBackendBaseUrl();
     const res = await fetch(`${backendUrl}/api/images/${id}`, {
       cache: "no-store",
     });
@@ -47,6 +45,7 @@ export async function DELETE(req, { params }) {
   }
 
   try {
+    const backendUrl = getBackendBaseUrl();
     const auth = req.headers.get("authorization") || "";
     const res = await fetch(`${backendUrl}/api/images/${id}`, {
       method: "DELETE",

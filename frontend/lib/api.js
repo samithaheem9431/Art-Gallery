@@ -18,6 +18,13 @@ function trimUrl(url) {
   return url?.replace(/\/$/, "") || "";
 }
 
+export function getBackendBaseUrl() {
+  const raw = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+  return trimUrl(raw)
+    .replace(/\/api$/i, "")
+    .replace(/localhost/i, "127.0.0.1");
+}
+
 function isLocalUrl(url) {
   return /localhost|127\.0\.0\.1/i.test(url || "");
 }
@@ -34,8 +41,10 @@ export function getApiUrl() {
     return "http://127.0.0.1:5000/api";
   }
 
-  if (configured && !isLocalUrl(configured)) {
-    return configured.endsWith("/api") ? configured : `${configured}/api`;
+  // Browser: use configured API URL when set (including localhost for admin uploads)
+  if (configured) {
+    const api = configured.endsWith("/api") ? configured : `${configured}/api`;
+    return api.replace(/localhost/i, "127.0.0.1");
   }
 
   return "/api";

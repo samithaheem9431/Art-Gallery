@@ -2,9 +2,13 @@ const backendUrl = process.env.BACKEND_URL || "http://127.0.0.1:5000";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  turbopack: {
+    root: ".",
+  },
   async rewrites() {
-    // app/api/images/[id]/route.js takes priority for image binaries.
-    // Everything else under /api is proxied to Express.
+    // Handled by app/api route handlers (binary-safe / reliable):
+    //   /api/images/*
+    //   /api/site-settings
     return [
       {
         source: "/api/:path*",
