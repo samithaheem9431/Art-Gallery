@@ -31,20 +31,28 @@ export default function CartPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           customer: form,
-          items: items.map((i) => ({ product: i.product, quantity: i.quantity })),
+          items: items.map((i) => ({
+            product: i.product,
+            slug: i.slug,
+            quantity: i.quantity,
+          })),
         }),
       });
-      if (!res.ok) throw new Error("Order failed");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || "Order failed");
       clearCart();
       setStatus({
         state: "success",
         message: "Thank you! Your order has been placed. We'll email you shortly.",
       });
-    } catch {
+    } catch (err) {
+      const isNetwork =
+        err?.message === "Failed to fetch" || err?.name === "TypeError";
       setStatus({
         state: "error",
-        message:
-          "Could not reach the server. Make sure the backend is running, then try again.",
+        message: isNetwork
+          ? "Could not reach the server. Make sure the backend is running, then try again."
+          : err?.message || "Could not place order. Please try again.",
       });
     }
   }
@@ -156,7 +164,7 @@ export default function CartPage() {
                 className="w-full border border-border px-3 py-2.5 text-sm outline-none focus:border-foreground"
               />
               <input
-                name="phone" placeholder="Phone" value={form.phone} onChange={handleChange}
+                required name="phone" placeholder="Phone" value={form.phone} onChange={handleChange}
                 className="w-full border border-border px-3 py-2.5 text-sm outline-none focus:border-foreground"
               />
               <textarea

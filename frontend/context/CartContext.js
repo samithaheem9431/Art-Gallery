@@ -5,6 +5,10 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 const CartContext = createContext(null);
 const STORAGE_KEY = "nk_cart";
 
+function isValidObjectId(id) {
+  return typeof id === "string" && /^[a-f0-9]{24}$/i.test(id);
+}
+
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
   const [loaded, setLoaded] = useState(false);
@@ -13,7 +17,11 @@ export function CartProvider({ children }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setItems(JSON.parse(raw));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        // Drop stale fallback-cart items (e.g. ids like "p1") from before API was connected
+        setItems(Array.isArray(parsed) ? parsed.filter((i) => isValidObjectId(i.product)) : []);
+      }
     } catch {
       // ignore
     }

@@ -56,6 +56,85 @@ export async function sendContactNotification({ name, email, phone, message }) {
   return true;
 }
 
+export async function sendOrderNotification(order) {
+  const transporter = getTransporter();
+  if (!transporter) {
+    console.warn("Email not configured (set SMTP_USER and SMTP_PASS). Skipping notification.");
+    return false;
+  }
+
+  const customer = order.customer || {};
+  const customerName = customer.name || "Unknown";
+  const customerEmail = customer.email || "Not provided";
+  const customerPhone = customer.phone?.trim() || "Not provided";
+  const customerAddress = customer.address?.trim() || "Not provided";
+  const customerCountry = customer.country?.trim() || "Not provided";
+  const currency = order.currency || "PKR";
+
+  const items = Array.isArray(order.items) ? order.items : [];
+  const itemLines = items.map((item, idx) => {
+    const title = item.title || "Untitled product";
+    const qty = Number(item.quantity) || 1;
+    const price = Number(item.price) || 0;
+    return `${idx + 1}. ${title} — Qty: ${qty}, Price: ${currency} ${price.toLocaleString("en-PK")}`;
+  });
+
+  await transporter.sendMail({
+    from: `"Zarmina Bashir Art" <${process.env.SMTP_USER}>`,
+    to: NOTIFY_EMAIL,
+    replyTo: customerEmail,
+    subject: `New order placed by ${customerName}`,
+    text: [
+      "A new order has been placed on your website.",
+      "",
+      `Order ID: ${order._id}`,
+      `Customer: ${customerName}`,
+      `Email: ${customerEmail}`,
+      `Phone: ${customerPhone}`,
+      `Address: ${customerAddress}`,
+      `Country: ${customerCountry}`,
+      "",
+      "Products:",
+      ...itemLines,
+      "",
+      `Total: ${currency} ${(Number(order.total) || 0).toLocaleString("en-PK")}`,
+    ].join("\n"),
+    html: `
+      <div style="font-family: Georgia, serif; max-width: 620px; color: #1a1a1a;">
+        <h2 style="font-weight: 500; margin-bottom: 20px;">New order placed</h2>
+        <p><strong>Order ID:</strong> ${escapeHtml(order._id)}</p>
+        <p><strong>Customer:</strong> ${escapeHtml(customerName)}</p>
+        <p><strong>Email:</strong> <a href="mailto:${escapeHtml(customerEmail)}">${escapeHtml(
+      customerEmail
+    )}</a></p>
+        <p><strong>Phone:</strong> ${escapeHtml(customerPhone)}</p>
+        <p><strong>Address:</strong> ${escapeHtml(customerAddress)}</p>
+        <p><strong>Country:</strong> ${escapeHtml(customerCountry)}</p>
+        <h3 style="margin-top: 24px; margin-bottom: 10px; font-weight: 500;">Products</h3>
+        <ul style="margin: 0 0 14px 18px; padding: 0; line-height: 1.6;">
+          ${items
+            .map((item) => {
+              const title = item.title || "Untitled product";
+              const qty = Number(item.quantity) || 1;
+              const price = Number(item.price) || 0;
+              return `<li>${escapeHtml(title)} — Qty: ${qty}, Price: ${currency} ${price.toLocaleString(
+                "en-PK"
+              )}</li>`;
+            })
+            .join("")}
+        </ul>
+        <p style="font-size: 18px;"><strong>Total:</strong> ${currency} ${(
+      Number(order.total) || 0
+    ).toLocaleString("en-PK")}</p>
+        <hr style="margin: 26px 0; border: none; border-top: 1px solid #e7e7e2;" />
+        <p style="font-size: 12px; color: #6b6b6b;">Zarmina Bashir Art — order notification</p>
+      </div>
+    `,
+  });
+
+  return true;
+}
+
 function escapeHtml(str) {
   return String(str)
     .replace(/&/g, "&amp;")
