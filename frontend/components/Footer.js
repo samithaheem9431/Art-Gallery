@@ -16,7 +16,7 @@ export default function Footer() {
           {/* Social */}
           <div className="flex items-center gap-6">
             <a
-              href="mailto:abdulsamikhan471@gmail.com"
+              href="mailto:bashirzarmina867@gmail.com"
               aria-label="Email"
               className="text-foreground transition hover:opacity-60"
             >

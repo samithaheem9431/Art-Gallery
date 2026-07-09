@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || "abdulsamikhan471@gmail.com";
+const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || "bashirzarmina867@gmail.com";
 
 function getTransporter() {
   const user = process.env.SMTP_USER;
