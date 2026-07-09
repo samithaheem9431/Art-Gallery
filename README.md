@@ -1,4 +1,4 @@
-# Naimal Khawar Art — MERN (Next.js) Website
+# Art-Gallery — MERN (Next.js) Website
 
 A full-stack art gallery / e-commerce website inspired by the design of
 [naimalkhawarart.com](https://naimalkhawarart.com/), rebuilt with a modern,
