@@ -63,26 +63,27 @@ export function normalizeMediaUrl(url) {
   return url;
 }
 
-// Use in admin/browser so thumbnails load from the backend directly (not blank previews)
+// Absolute backend URL for displaying Mongo/Multer images (admin + public site)
 export function getDisplayImageUrl(url) {
   if (!url || typeof url !== "string") return url;
 
   const match = url.match(/\/api\/images\/([a-f0-9]{24})/i);
-  if (!match) return normalizeMediaUrl(url);
-
-  if (typeof window !== "undefined") {
-    const base = getApiUrl().replace(/\/api\/?$/i, "");
-    return `${base}/api/images/${match[1]}`;
+  if (match) {
+    return `${getBackendBaseUrl()}/api/images/${match[1]}`;
   }
 
-  return `/api/images/${match[1]}`;
+  if (isLocalUrl(url)) {
+    return url.replace(/localhost/i, "127.0.0.1");
+  }
+
+  return url;
 }
 
 function normalizeProduct(product) {
   if (!product) return product;
   return {
     ...product,
-    images: Array.isArray(product.images) ? product.images.map(normalizeMediaUrl) : [],
+    images: Array.isArray(product.images) ? product.images.map(getDisplayImageUrl) : [],
   };
 }
 
@@ -90,7 +91,7 @@ function normalizeCollection(collection) {
   if (!collection) return collection;
   return {
     ...collection,
-    image: normalizeMediaUrl(collection.image),
+    image: getDisplayImageUrl(collection.image),
   };
 }
 
@@ -154,7 +155,7 @@ export async function getSiteSettings() {
     ...data,
     aboutSlides:
       Array.isArray(data.aboutSlides) && data.aboutSlides.length > 0
-        ? data.aboutSlides.map(normalizeMediaUrl)
+        ? data.aboutSlides.map(getDisplayImageUrl)
         : defaultAboutSlides,
     aboutTitle: data.aboutTitle || defaultAbout.aboutTitle,
     aboutText1: data.aboutText1 || defaultAbout.aboutText1,

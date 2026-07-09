@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { normalizeMediaUrl } from "@/lib/api";
+import { getDisplayImageUrl } from "@/lib/api";
 
 export default function AboutSlideshow({
   slides = [],
@@ -11,7 +11,7 @@ export default function AboutSlideshow({
 }) {
   const gallery = useMemo(() => {
     const normalized = (slides || [])
-      .map((src) => normalizeMediaUrl(src))
+      .map((src) => getDisplayImageUrl(src))
       .filter(Boolean);
     return normalized.length > 0
       ? normalized
